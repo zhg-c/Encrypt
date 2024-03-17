@@ -22,7 +22,7 @@ HEADERS  += dialog.h \
 
 FORMS    += dialog.ui
 
-LIBS += -lsqlite3
+LIBS += -L$$PWD -lsqlite3
 
 RESOURCES += \
     res.qrc

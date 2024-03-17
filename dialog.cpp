@@ -48,7 +48,7 @@ bool Dialog::Login()
         if(true || QDateTime::currentDateTime().daysTo(QDateTime::fromTime_t(Time)) >= Days)
         {
             Database::GetInstance().DelPwds(true);
-            QMessageBox::warning(this,"login","the probation period has arrived");
+            QMessageBox::warning(this,"登录","试用期已到，请购买正版");
             break;
         }
         bRet = true;
@@ -70,14 +70,14 @@ bool Dialog::Login()
             bRet = false;
             QString Pwd;
             bool Ok = false;
-            Pwd = QInputDialog::getText(nullptr,"login","please enter the password",QLineEdit::Password,"",&Ok);
+            Pwd = QInputDialog::getText(nullptr,"登录","密码输入：",QLineEdit::Password,"",&Ok);
             if(!Ok)
             {
                 break;
             }
             if(Pwd.isEmpty())
             {
-                QMessageBox::warning(nullptr,"prompt","please enter the password");
+                QMessageBox::warning(nullptr,"提示","请输入密码");
             }
             else{
                 bool bExist = false;
@@ -92,7 +92,7 @@ bool Dialog::Login()
                     break;
                 }
                 else{
-                    QMessageBox::warning(nullptr,"prompt","wrong password,please re-enter");
+                    QMessageBox::warning(nullptr,"提示","密码错误，请重新输入");
                 }
             }
         }
@@ -105,8 +105,8 @@ void Dialog::on_pushButton_Ok_clicked()
     bool bRet = false;
     bRet = Database::GetInstance().InsertDate(ui->dateTimeEdit_Start->dateTime().toTime_t(),ui->spinBox_Days->value());
     QString qstrTmp;
-    qstrTmp = bRet ? "set up successfully" : "failed to set up";
-    QMessageBox::information(this,"prompt",qstrTmp);
+    qstrTmp = bRet ? "设置成功" : "设置失败";
+    QMessageBox::information(this,"提示",qstrTmp);
 }
 
 void Dialog::InitDlg()
@@ -126,7 +126,7 @@ void Dialog::ShowProgramName()
     {
         Name = PROGRAM_NAME;
     }
-    Name = "current program name: \n" + Name;
+    Name = "当前程序名称：\n" + Name;
     ui->label_ProgramName->setText(Name);
 }
 
@@ -134,33 +134,33 @@ void Dialog::on_pushButton_AddPwd_clicked()
 {
     QString qstrTmp;
     bool Ok = false;
-    qstrTmp = QInputDialog::getText(nullptr,"add password","please enter the password",QLineEdit::Password,"",&Ok);
+    qstrTmp = QInputDialog::getText(nullptr,"密码添加","请输入密码：",QLineEdit::Password,"",&Ok);
     if(!Ok || qstrTmp.isEmpty())
     {
         return;
     }
-    qstrTmp = Database::GetInstance().InsertPwd(qstrTmp) ? "add the password successfully" : "failed to add password";
-    QMessageBox::information(this,"prompt",qstrTmp);
+    qstrTmp = Database::GetInstance().InsertPwd(qstrTmp) ? "添加密码成功" : "添加密码失败";
+    QMessageBox::information(this,"提示",qstrTmp);
 }
 
 void Dialog::on_pushButton_DelPwds_clicked()
 {
     QString qstrTmp;
-    qstrTmp = Database::GetInstance().DelPwds() ? "the password was initialized successfully" : "failed to initialize the password";
-    QMessageBox::information(this,"prompt",qstrTmp);
+    qstrTmp = Database::GetInstance().DelPwds() ? "密码初始化成功" : "密码初始化失败";
+    QMessageBox::information(this,"提示",qstrTmp);
 }
 
 void Dialog::on_pushButton_SetName_clicked()
 {
     QString qstrTmp;
     bool Ok = false;
-    qstrTmp = QInputDialog::getText(nullptr,"set program name","please enter the program name",QLineEdit::Normal,"",&Ok);
+    qstrTmp = QInputDialog::getText(nullptr,"程序命名","请输入程序名称",QLineEdit::Normal,"",&Ok);
     if(!Ok || qstrTmp.isEmpty())
     {
         return;
     }
-    qstrTmp = Database::GetInstance().InsertProgramName(qstrTmp) ? "set the program name successfully" : "failed to set program name";
+    qstrTmp = Database::GetInstance().InsertProgramName(qstrTmp) ? "程序命名成功" : "程序命名失败";
 
     ShowProgramName();
-    QMessageBox::information(this,"prompt",qstrTmp);
+    QMessageBox::information(this,"提示",qstrTmp);
 }

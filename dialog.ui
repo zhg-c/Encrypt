@@ -17,13 +17,13 @@
    <item row="0" column="1">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>term of use setting</string>
+      <string>试用期设置</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>start time:</string>
+         <string>开始时间：</string>
         </property>
        </widget>
       </item>
@@ -33,7 +33,7 @@
       <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>number of effective days:</string>
+         <string>试用天数：</string>
         </property>
        </widget>
       </item>
@@ -60,7 +60,7 @@
       <item row="2" column="1">
        <widget class="QPushButton" name="pushButton_Ok">
         <property name="text">
-         <string>ok</string>
+         <string>确定</string>
         </property>
        </widget>
       </item>
@@ -103,7 +103,7 @@
    <item row="0" column="3">
     <widget class="QGroupBox" name="groupBox_Admin">
      <property name="title">
-      <string>custom settings</string>
+      <string>其他设置</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
@@ -116,7 +116,7 @@
       <item row="4" column="0">
        <widget class="QPushButton" name="pushButton_AddPwd">
         <property name="text">
-         <string>add password...</string>
+         <string>添加密码...</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -126,7 +126,7 @@
       <item row="3" column="0">
        <widget class="QPushButton" name="pushButton_DelPwds">
         <property name="text">
-         <string>Init password</string>
+         <string>初始密码</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -136,7 +136,7 @@
       <item row="2" column="0">
        <widget class="QPushButton" name="pushButton_SetName">
         <property name="text">
-         <string>set program name</string>
+         <string>重命名</string>
         </property>
         <property name="flat">
          <bool>true</bool>
