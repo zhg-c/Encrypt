@@ -27,7 +27,11 @@
     <number>0</number>
    </property>
    <item row="0" column="0" colspan="3">
-    <widget class="QTableWidget" name="tableWidget_Days"/>
+    <widget class="QTableWidget" name="tableWidget_Days">
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+    </widget>
    </item>
    <item row="1" column="0">
     <spacer name="horizontalSpacer">
