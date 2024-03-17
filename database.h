@@ -2,6 +2,8 @@
 #define DATABASE_H
 #include <sqlite3.h>
 #include <QtGlobal>
+#include <tuple>
+#include <vector>
 
 class Database
 {
@@ -16,8 +18,9 @@ public:
 public:
     bool InitDB();
     bool SelDate(qint64 &Time,int &Days);
+    bool SelAllDates(std::vector<std::tuple<qint64,int,int>> &vDates);
     bool InsertDate(qint64 Time,int Days);
-    bool InsertPwd(const QString &Pwd);
+    bool InsertPwd(const QString &Pwd,int ExprieId);
     bool SelPwd(const QString &Pwd,bool &bExist);
     bool DelPwds(bool bOnlyDelUsed = false);
     bool UpdateExitTime();

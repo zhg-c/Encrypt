@@ -30,6 +30,7 @@ private:
 
 private:
     Ui::Dialog *ui;
+    int m_ExprieId;
 };
 
 #endif // DIALOG_H

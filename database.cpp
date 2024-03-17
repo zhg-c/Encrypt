@@ -23,8 +23,8 @@ bool Database::InitDB()
 {
     bool bRet = false;
     const char *Sql[] = {
-        "CREATE TABLE IF NOT EXISTS exprie(id INT PRIMARY KEY,time INTEGER ,days INT ,exittime INTEGER ,verify TEXT)",
-        "CREATE TABLE IF NOT EXISTS password(pwd TEXT,isdelete INT DEFAULT 0)",
+        "CREATE TABLE IF NOT EXISTS exprie(id INTEGER PRIMARY KEY AUTOINCREMENT,time INTEGER ,days INT ,exittime INTEGER ,verify TEXT)",
+        "CREATE TABLE IF NOT EXISTS password(exprieid INT PRIMARY KEY,pwd TEXT,isdelete INT DEFAULT 0)",
         "CREATE TABLE IF NOT EXISTS programname(id INT PRIMARY KEY,name TEXT)",
         nullptr
     };
@@ -62,7 +62,7 @@ bool Database::SelDate(qint64 &Time,int &Days)
     qint64 ExitTime = 0;
     bool bRet = false;
     const char *Sql[] = {
-        "SELECT time,days,exittime,verify FROM exprie",
+        "SELECT a.time,a.days,a.exittime,verify FROM exprie AS a,password AS b WHERE a.id=b.exprieid AND b.isdelete=1",
         nullptr
     };
     sqlite3_stmt *pStmt = nullptr;
@@ -103,6 +103,42 @@ bool Database::SelDate(qint64 &Time,int &Days)
     return bRet;
 }
 
+bool Database::SelAllDates(std::vector<std::tuple<qint64, int,int> > &vDates)
+{
+    bool bRet = false;
+    const char *Sql[] = {
+        "SELECT time,days, id FROM exprie ORDER BY time DESC",
+        nullptr
+    };
+    sqlite3_stmt *pStmt = nullptr;
+    do{
+        if(sqlite3_prepare(m_pDb,Sql[0],-1,&pStmt,nullptr) != SQLITE_OK)
+        {
+            break;
+        }
+        int Res = SQLITE_ERROR;
+        while((Res = sqlite3_step(pStmt)) == SQLITE_ROW)
+        {
+            std::tuple<qint64, int,int> Date;
+            int Index = 0;
+            std::get<0>(Date) = sqlite3_column_int64(pStmt,Index++);
+            std::get<1>(Date) = sqlite3_column_int(pStmt,Index++);
+            std::get<2>(Date) = sqlite3_column_int(pStmt,Index++);
+            vDates.push_back(Date);
+        }
+        if(Res != SQLITE_DONE)
+        {
+            break;
+        }
+        bRet = true;
+    }while(false);
+    if(pStmt)
+    {
+        sqlite3_finalize(pStmt);
+    }
+    return bRet;
+}
+
 bool Database::InsertDate(qint64 Time,int Days)
 {
     QString qstrTmp;
@@ -110,7 +146,7 @@ bool Database::InsertDate(qint64 Time,int Days)
     Bytes2Str(Bytes,qstrTmp);
     bool bRet = false;
     const char *Sql[] = {
-        "REPLACE INTO exprie (id,time,days,exittime,verify) VALUES(0,@1,@2,@3,@4)",
+        "INSERT INTO exprie (time,days,exittime,verify) VALUES(@1,@2,@3,@4)",
         nullptr
     };
     sqlite3_stmt *pStmt = nullptr;
@@ -149,14 +185,14 @@ bool Database::InsertDate(qint64 Time,int Days)
     return bRet;
 }
 
-bool Database::InsertPwd(const QString &Pwd)
+bool Database::InsertPwd(const QString &Pwd,int ExprieId)
 {
     QString qstrTmp;
     QByteArray Bytes = QCryptographicHash::hash(Pwd.toStdString().c_str(),QCryptographicHash::Md5).toHex();
     Bytes2Str(Bytes,qstrTmp);
     bool bRet = false;
     const char *Sql[] = {
-        "INSERT INTO password (pwd) VALUES(@1)",
+        "REPLACE INTO password (exprieid,pwd) VALUES(@1,@2)",
         nullptr
     };
     sqlite3_stmt *pStmt = nullptr;
@@ -166,6 +202,10 @@ bool Database::InsertPwd(const QString &Pwd)
             break;
         }
         int Index = 1;
+        if(sqlite3_bind_int(pStmt,Index++,ExprieId) != SQLITE_OK)
+        {
+            break;
+        }
         if(sqlite3_bind_text(pStmt,Index++,qstrTmp.toStdString().c_str(),-1,nullptr) != SQLITE_OK)
         {
             break;

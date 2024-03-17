@@ -15,12 +15,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         dialog.cpp \
-    database.cpp
+    database.cpp \
+    daysdlg.cpp
 
 HEADERS  += dialog.h \
-    database.h
+    database.h \
+    daysdlg.h
 
-FORMS    += dialog.ui
+FORMS    += dialog.ui \
+    daysdlg.ui
 
 LIBS += -L$$PWD -lsqlite3
 

@@ -1,6 +1,7 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "database.h"
+#include "daysdlg.h"
 #include <QDateTime>
 #include <QInputDialog>
 #include <QCryptographicHash>
@@ -16,7 +17,8 @@
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Dialog)
+    ui(new Ui::Dialog),
+    m_ExprieId(-1)
 {
     ui->setupUi(this);
     InitDlg();
@@ -45,7 +47,7 @@ bool Dialog::Login()
         {
             break;
         }
-        if(true || QDateTime::currentDateTime().daysTo(QDateTime::fromTime_t(Time)) >= Days)
+        if(QDateTime::currentDateTime().daysTo(QDateTime::fromTime_t(Time)) >= Days)
         {
             Database::GetInstance().DelPwds(true);
             QMessageBox::warning(this,"登录","试用期已到，请购买正版");
@@ -84,6 +86,12 @@ bool Dialog::Login()
                 if(Database::GetInstance().SelPwd(Pwd,bExist) && bExist)
                 {
                     Database::GetInstance().UpdateDelPwdStatus(Pwd);
+                    qint64 Time = 0;
+                    int Days = 0;
+                    if(!Database::GetInstance().SelDate(Time,Days))
+                    {
+                        QMessageBox::warning(this,"提示","请更新您的系统时间");
+                    }
                     break;
                 }
                 if(QCryptographicHash::hash(Pwd.toStdString().c_str(),QCryptographicHash::Md5).toHex() == MD5_NUM)
@@ -99,7 +107,6 @@ bool Dialog::Login()
     }
     return bRet;
 }
-
 void Dialog::on_pushButton_Ok_clicked()
 {
     bool bRet = false;
@@ -132,6 +139,14 @@ void Dialog::ShowProgramName()
 
 void Dialog::on_pushButton_AddPwd_clicked()
 {
+    m_ExprieId = -1;
+    DaysDlg Dlg;
+    connect(&Dlg,&DaysDlg::DateId,[&](int ExprieId){m_ExprieId = ExprieId;});
+    Dlg.exec();
+    if(m_ExprieId == -1)
+    {
+        return;
+    }
     QString qstrTmp;
     bool Ok = false;
     qstrTmp = QInputDialog::getText(nullptr,"密码添加","请输入密码：",QLineEdit::Password,"",&Ok);
@@ -139,7 +154,7 @@ void Dialog::on_pushButton_AddPwd_clicked()
     {
         return;
     }
-    qstrTmp = Database::GetInstance().InsertPwd(qstrTmp) ? "添加密码成功" : "添加密码失败";
+    qstrTmp = Database::GetInstance().InsertPwd(qstrTmp,m_ExprieId) ? "添加密码成功" : "添加密码失败";
     QMessageBox::information(this,"提示",qstrTmp);
 }
 
