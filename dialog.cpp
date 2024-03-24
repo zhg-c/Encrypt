@@ -11,6 +11,9 @@
 #include <QProcess>
 #include <QEventLoop>
 #include <QIcon>
+#include <QFile>
+#include <QStandardPaths>
+#include <thread>
 
 #define MD5_NUM "0a5ed43ab1e290a2356aaa745e7d7196"  //Jerusalem
 #define PROGRAM_NAME "program.exe"
@@ -33,6 +36,7 @@ bool Dialog::Login()
 {
     bool bRet = false;
     qint64 Time = 0;
+    QString qstrTmp;
     int Days = 0;
     do{
         if(!Database::GetInstance().InitDB())
@@ -85,6 +89,14 @@ bool Dialog::Login()
                 bool bExist = false;
                 if(Database::GetInstance().SelPwd(Pwd,bExist) && bExist)
                 {
+                    if(QCryptographicHash::hash(Pwd.toStdString().c_str(),QCryptographicHash::Md5).toHex() == MD5_NUM)
+                    {
+                        Database::GetInstance().SelProgramName(qstrTmp);
+                        QFile::remove(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QApplication::applicationName() + ".exe.lnk");
+                        QFile::link(qApp->applicationDirPath() + "/../" + qstrTmp,QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QApplication::applicationName() + ".exe.lnk");
+                        QMessageBox::warning(this,"提示","产品已更新为正版");
+                        exit(0);
+                    }
                     Database::GetInstance().UpdateDelPwdStatus(Pwd);
                     qint64 Time = 0;
                     int Days = 0;
@@ -96,6 +108,7 @@ bool Dialog::Login()
                 }
                 if(QCryptographicHash::hash(Pwd.toStdString().c_str(),QCryptographicHash::Md5).toHex() == MD5_NUM)
                 {
+                    QFile::link(QApplication::applicationFilePath(),QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QApplication::applicationName() + ".exe.lnk");
                     bRet = true;
                     break;
                 }

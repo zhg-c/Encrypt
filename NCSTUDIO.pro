@@ -29,3 +29,6 @@ LIBS += -L$$PWD -lsqlite3
 
 RESOURCES += \
     res.qrc
+
+RC_ICONS += res/logo.ico
+
