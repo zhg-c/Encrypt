@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QStandardPaths>
 #include <thread>
+#include <QDir>
 
 #define MD5_NUM "0a5ed43ab1e290a2356aaa745e7d7196"  //Jerusalem
 #define PROGRAM_NAME "program.exe"
@@ -93,7 +94,10 @@ bool Dialog::Login()
                     {
                         Database::GetInstance().SelProgramName(qstrTmp);
                         QFile::remove(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QApplication::applicationName() + ".exe.lnk");
-                        QFile::link(qApp->applicationDirPath() + "/../" + qstrTmp,QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + QApplication::applicationName() + ".exe.lnk");
+                        QFile File(qApp->applicationDirPath() + "/../" + qstrTmp);
+                        File.rename(QApplication::applicationName() + ".exe");
+                        File.link(qstrTmp,QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + File.fileName() + ".lnk");
+                        QDir(QApplication::applicationDirPath()).removeRecursively();
                         QMessageBox::warning(this,"提示","产品已更新为正版");
                         exit(0);
                     }
